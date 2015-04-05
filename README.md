@@ -20,6 +20,18 @@ etc. is in the GitHub [project wiki](https://github.com/lietu/twitch-quote-bot/w
 [https://github.com/lietu/twitch-quote-bot/wiki](https://github.com/lietu/twitch-quote-bot/wiki).
 
 
+Windows users
+=============
+
+You can totally just download a .zip with an .exe in it and you don't need to worry about any other requirements.
+
+1. Go to [twitch-bot releases](https://github.com/lietu/twitch-bot/releases) page
+1. Download the latest .zip, extract to where-ever you wish
+1. Copy `settings.example.py` to `settings.py`
+1. Check the [Getting an OAuth token for Twitch chat IRC access](https://github.com/lietu/twitch-bot#getting-an-oauth-token-for-twitch-chat-irc-access) -section for basic connectivity help.
+1. Profit!11eleven
+
+
 
 Requirements
 ============
@@ -49,6 +61,12 @@ yum -y install python-setuptools python-pip python-devel lua lua-devel gcc
 pip install virtualenv virtualenvwrapper
 ```
 
+
+For Qt frontend you'll also need to install PySide:
+```
+pip install PySide==1.2.2
+```
+
 Setup
 =====
 
@@ -65,8 +83,7 @@ Setup
     # You might have to prepend sudo if not using virtualenv
     ```
  1. Copy settings.example.py to settings.py, and edit to needs
- 1. Run the bot: ```python -m bot```
-    For Python 2.6 you'll have to use ```python -m bot.__main__```
+ 1. Run the bot: ```python start.py```
 
 
 Getting an OAuth token for Twitch chat IRC access
@@ -228,4 +245,21 @@ vagrant provision
 
 Also if you pull changes from GitHub, you should probably run that command 
 before trying to continue using the VM.
+
+
+Building Windows .exe
+=====================
+
+To build the .exe for Windows use, you'll need a bit of extra help:
+
+```
+pip install cx_Freeze packaging
+python setup.py build_exe
+```
+
+
+Qt UI Graphics attributions
+===========================
+
+Icons designed by [Freepik](http://www.flaticon.com/)
 

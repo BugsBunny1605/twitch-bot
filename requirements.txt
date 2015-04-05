@@ -4,3 +4,4 @@ lupa==1.1
 peewee==2.2.5
 sphinx==1.2.2
 mock==1.0.1
+pathlib==1.0.1

@@ -2,6 +2,9 @@
 Database abstraction layer
 """
 
+from __future__ import absolute_import
+
+
 import importlib
 import inspect
 import json
@@ -9,6 +12,7 @@ import os
 from peewee import SqliteDatabase, Model, CharField, IntegerField, \
     BooleanField, TextField
 from peewee import fn
+from bot.utils import get_base_path
 
 
 class Migration(object):
@@ -85,7 +89,7 @@ class Database(object):
         :return:
         """
         migrations_path = os.path.realpath(os.path.join(
-            os.path.join(os.path.dirname(__file__), ".."),
+            get_base_path(),
             "db_migrations"
         ))
 

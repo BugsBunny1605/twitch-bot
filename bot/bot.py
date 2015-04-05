@@ -2,25 +2,33 @@
 The main bot logic module
 """
 
+from __future__ import absolute_import
+
 from datetime import datetime
 from glob import glob
 import json
 from lupa import LuaError
-from .commandmanager import CommandManager, CommandPermissionError, \
+from bot.commandmanager import CommandManager, CommandPermissionError, \
     CommandCooldownError
-from .database import Database
-from .utils import ThreadCallRelay, human_readable_time, ArgumentParser
-from .blacklist import BlacklistManager
+from bot.database import Database
+from bot.utils import ThreadCallRelay, human_readable_time, ArgumentParser
+from bot.blacklist import BlacklistManager
+from bot.messages import ConsoleMsg, AddRegularToListMsg,\
+    RemoveRegularFromListMsg, SetChannelsMsg
 
 
 class Bot(object):
     """A bot instance"""
 
-    def __init__(self, settings=None, wrapper=None, irc_wrapper=None,
+    CONSOLE_BOT_PREFIX = " --- "
+
+    def __init__(self, settings=None, ui_queues=None, wrapper=None,
+                 irc_wrapper=None,
                  logger=None, wrap_irc=True):
         self.settings = settings
         self.wrapper = wrapper
         self.logger = logger
+        self.ui_queues = ui_queues
 
         if irc_wrapper:
             iw = irc_wrapper(
@@ -67,8 +75,13 @@ class Bot(object):
 
         self._initialize_blacklists()
 
+        self._send_initial_ui_data()
+
         self.logger.info(u"Starting IRC connection")
         self.ircWrapper.start()
+
+        for channel in self.settings.CHANNEL_LIST:
+            self.console(channel, "Bot started")
 
         # Run until we want to exit
         self.wrapper.loop()
@@ -106,6 +119,15 @@ class Bot(object):
 
         return self.ircWrapper
 
+    def console(self, channel, message):
+        self.ui_queues["in"].put(ConsoleMsg(channel, message))
+
+    def bot_console(self, channel, message):
+        self.ui_queues["in"].put(ConsoleMsg(
+            channel,
+            self.CONSOLE_BOT_PREFIX + " " + message
+        ))
+
     def chat_message(self, channel, nick, text, timestamp):
         """
         Process a non-command line from the chat
@@ -116,6 +138,8 @@ class Bot(object):
         :param timestamp: The unixtime for when the event happened
         :return:
         """
+
+        self.console(channel, "<{0}> {1}".format(nick, text))
 
         user_level = self._get_user_level(channel, nick)
         if user_level not in ("mod", "owner"):
@@ -134,9 +158,9 @@ class Bot(object):
 
                 message = u"{nick}, you triggered blacklist rule #{id}, " \
                           u"you were timed out for {time}".format(
-                              nick=nick,
-                              id=rule_id,
-                              time=human_readable_time(ban_time)
+                    nick=nick,
+                    id=rule_id,
+                    time=human_readable_time(ban_time)
                 )
 
                 self._message(channel, message)
@@ -251,6 +275,8 @@ class Bot(object):
         :return: None
         """
 
+        self.bot_console(channel, "Updating command {0}".format(command))
+
         self._set_command(channel, command, flags, user_level, code)
 
     def update_global_value(self, channel, key, value):
@@ -278,7 +304,26 @@ class Bot(object):
             nick=nick, seconds=seconds
         )
 
+        self.bot_console(channel, "Timing out {0}".format(nick))
+
         self._message(channel, message)
+
+    def get_regulars(self, channel):
+        model = self._get_model(channel, "regulars")
+        regulars = list(model.select())
+
+        result = []
+        for regular in regulars:
+            result.append(regular.nick)
+
+        return result
+
+    def send_regulars_to_ui(self, channel):
+        q = self.ui_queues["in"]
+
+        regulars = self.wrapper.get_regulars(channel)
+        for regular in regulars:
+            q.put(AddRegularToListMsg(regular))
 
     #
     # Internal API
@@ -296,6 +341,8 @@ class Bot(object):
         self.logger.debug(u"Sending message to {0}: {1}".format(
             channel, message
         ))
+
+        self.bot_console(channel, "Saying: {0}".format(message))
 
         self.ircWrapper.message(channel, message)
 
@@ -559,6 +606,8 @@ class Bot(object):
         self._message(channel, message.format(nick))
 
         self.logger.info(u"Added quote for {0}: {1}".format(channel, quote))
+        self.bot_console(channel, "Added quote: {0}".format(quote))
+
 
     def _del_quote(self, channel, nick, args):
         """
@@ -589,6 +638,7 @@ class Bot(object):
             self.logger.info(
                 u"Removed quote {0} for {1}".format(quote_id, channel)
             )
+            self.bot_console(channel, "Deleted quote: {0}".format(quote_id))
         else:
             message = u"{0}, no quote found with ID {1}".format(nick, quote_id)
 
@@ -642,6 +692,8 @@ class Bot(object):
         )
 
         self.logger.info(u"Added regular {0} to {1}".format(nick, channel))
+        self.bot_console(channel, "Added regular: {0}".format(nick))
+        self.ui_queues["in"].put(AddRegularToListMsg(nick))
 
     def _remove_regular(self, channel, nick):
         """
@@ -660,6 +712,9 @@ class Bot(object):
             self.logger.info(u"Removed regular {0} from {1}".format(
                 nick, channel
             ))
+
+            self.bot_console(channel, "Removed regular: {0}".format(nick))
+            self.ui_queues["in"].put(RemoveRegularFromListMsg(nick))
 
     def _add_to_blacklist(self, channel, nick, args):
         """
@@ -689,6 +744,8 @@ class Bot(object):
             nick=nick, match=rule.match, id=rule.id
         )
 
+        self.bot_console(channel, "Added to blacklist: {0}".format(rule.match))
+
         return message
 
     def _add_to_whitelist(self, channel, nick, args):
@@ -710,6 +767,8 @@ class Bot(object):
         message = u"{nick}, added whitelist rule {match} with ID {id}".format(
             nick=nick, match=rule.match, id=rule.id
         )
+
+        self.bot_console(channel, "Added to whitelist: {0}".format(rule.match))
 
         return message
 
@@ -733,6 +792,10 @@ class Bot(object):
             self.blacklist_managers[channel].remove_blacklist(row_id)
 
             message = u"{0}, blacklist item removed.".format(nick)
+            self.bot_console(channel, "Removed from blacklist: {0}".format(
+                row_id
+            ))
+
             self.logger.info(u"Removed blacklist item {0} for {1}".format(
                 row_id, channel
             ))
@@ -766,6 +829,11 @@ class Bot(object):
             self.logger.info(u"Removed whitelist item {0} for {1}".format(
                 row_id, channel
             ))
+
+            self.bot_console(channel, "Removed from whitelist: {0}".format(
+                row_id
+            ))
+
         else:
             message = u"{0}, no whitelist item found with ID {1}".format(
                 nick, row_id
@@ -905,3 +973,10 @@ class Bot(object):
         """
 
         return self.channel_models[channel][table]
+
+    def _send_initial_ui_data(self):
+        channels = []
+        for channel in self.settings.CHANNEL_LIST:
+            channels.append(channel)
+
+        self.ui_queues["in"].put(SetChannelsMsg(channels))

@@ -1,5 +1,6 @@
 import argparse
 import sys
+import os
 from multiprocessing import Queue as MPQueue
 
 try:
@@ -248,3 +249,15 @@ class ArgumentParser(argparse.ArgumentParser):
             exc.argument = self._get_action_from_name(exc.argument_name)
             raise exc
         raise ArgumentError(message)
+
+def is_frozen():
+    return hasattr(sys, "frozen")
+
+def get_executable():
+    if is_frozen():
+        return sys.executable
+    else:
+        return sys.argv[0]
+
+def get_base_path():
+    return os.path.dirname(get_executable())

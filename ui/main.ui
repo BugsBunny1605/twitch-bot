@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>681</width>
+    <height>512</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Das Bott</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="console_tab">
+         <attribute name="title">
+          <string>Console</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QPlainTextEdit" name="console">
+            <property name="font">
+             <font>
+              <family>DejaVu Sans Mono</family>
+              <pointsize>8</pointsize>
+              <kerning>true</kerning>
+             </font>
+            </property>
+            <property name="acceptDrops">
+             <bool>false</bool>
+            </property>
+            <property name="undoRedoEnabled">
+             <bool>false</bool>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="plainText">
+             <string/>
+            </property>
+            <property name="backgroundVisible">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="regularsTab">
+         <attribute name="title">
+          <string>Regulars</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="4" column="0">
+           <widget class="QListView" name="regularsList">
+            <property name="selectionMode">
+             <enum>QAbstractItemView::ExtendedSelection</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Maximum</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>1</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <layout class="QFormLayout" name="formLayout_2">
+              <property name="fieldGrowthPolicy">
+               <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="addRegularLabel">
+                <property name="text">
+                 <string>Add Regular</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="addRegularLineEdit">
+                <property name="statusTip">
+                 <string>Write in the name of the regular to add, and press Enter.</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="5" column="0">
+           <widget class="QPushButton" name="removeRegulars">
+            <property name="text">
+             <string>Remove selected</string>
+            </property>
+            <property name="icon">
+             <iconset>
+              <normaloff>basic-ui/delete85.png</normaloff>basic-ui/delete85.png</iconset>
+            </property>
+            <property name="autoRepeat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="test_tab">
+         <attribute name="title">
+          <string>Test</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <layout class="QFormLayout" name="formLayout">
+            <property name="fieldGrowthPolicy">
+             <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+            </property>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Say something</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="saySomething"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="0">
+     <widget class="QComboBox" name="channelSelection"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>681</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuConsole">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuConsole"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionQuit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
