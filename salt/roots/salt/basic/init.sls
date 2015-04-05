@@ -15,7 +15,7 @@ bot:
         - dir_mode: 00750
         - file_mode: 00640
 
-{% for pkg in 'nano', 'vim-enhanced', 'wget', 'curl' %}
+{% for pkg in 'nano', 'vim-enhanced', 'wget', 'curl', 'gcc' %}
 {{ pkg }}:
     pkg.installed
 {% endfor %}
