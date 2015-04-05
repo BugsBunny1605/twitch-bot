@@ -17,6 +17,15 @@ class FakeBot(object):
 
 
 class CommandManagerTest(TestCase):
+
+    UTILS = """
+--- Convert vararg ... to a normal table
+function table.pack(...)
+  return { n = select("#", ...), ... }
+end
+"""
+
+
     def setUp(self):
         os.environ["LUA_PATH"] = "lua/lib/?.lua;lua/lib/?/?.lua"
 
@@ -24,6 +33,7 @@ class CommandManagerTest(TestCase):
         chat = Chat(None, None)
         chat.message = Mock()
         cm = bot.commandmanager.CommandManager("#tmp", FakeBot(), chat=chat)
+        cm.load_lua(self.UTILS)
 
         # Some test command definitions
         def_commands = [
@@ -31,7 +41,7 @@ class CommandManagerTest(TestCase):
             "-ul=reg --args=value test_func2 return __chat__test_func(value)"
             " + 10",
             "--args=... test_args local s = 0; for k, v in ipairs("
-            "arg) do s = s + tonumber(v); end; return s"
+            "{...}) do s = s + tonumber(v); end; return s"
         ]
 
         for line in def_commands:
@@ -39,17 +49,18 @@ class CommandManagerTest(TestCase):
 
         retval = cm.run_command("username", "mod", "test_func2", ["10"],
                                 threaded=False)
-        assert retval == 21
+        self.assertEquals(retval, 21)
 
         retval = cm.run_command(
             "username", "mod", "test_args", ["1", "2", "3"], threaded=False
         )
-        assert retval == 6
+        self.assertEquals(retval, 6)
 
     def test_simple_functions(self):
         chat = Chat(None, None)
         chat.message = Mock()
         cm = bot.commandmanager.CommandManager("#tmp", FakeBot(), chat=chat)
+        cm.load_lua(self.UTILS)
 
         # Some test command definitions
         def_commands = [
@@ -62,12 +73,12 @@ class CommandManagerTest(TestCase):
 
         retval = cm.run_command("username", "mod", "test_func", [],
                                 threaded=False)
-        assert retval == "Hello there, username"
+        self.assertEquals(retval, "Hello there, username")
 
         retval = cm.run_command(
             "username", "reg", "test_func2", ["target"], threaded=False
         )
-        assert retval == "Hello, target"
+        self.assertEquals(retval, "Hello, target")
 
         self.assertRaises(
             bot.commandmanager.CommandPermissionError,
@@ -81,18 +92,20 @@ class CommandManagerTest(TestCase):
         chat = Chat(None, None)
         chat.message = Mock()
         cm = bot.commandmanager.CommandManager("#tmp", FakeBot(), chat=chat)
+        cm.load_lua(self.UTILS)
 
         # Some test command definitions
         line = "-w test return user"
         cm.add_command(line.split(" "))
 
         retval = cm.run_command("fakeuser", "mod", "test", threaded=False)
-        assert retval == "fakeuser"
+        self.assertEquals(retval, "fakeuser")
 
     def test_quoted(self):
         chat = Chat(None, None)
         chat.message = Mock()
         cm = bot.commandmanager.CommandManager("#tmp", FakeBot(), chat=chat)
+        cm.load_lua(self.UTILS)
 
         # Some test command definitions
         def_commands = [
@@ -106,17 +119,18 @@ class CommandManagerTest(TestCase):
         args = '"John Doe" "Car Salesman"'.split(" ")
         retval = cm.run_command("fakeuser", "mod", "test_quoted", args,
                                 threaded=False)
-        assert retval == "John Doe: Car Salesman"
+        self.assertEquals(retval, "John Doe: Car Salesman")
 
         retval = cm.run_command("fakeuser", "mod", "test_not_quoted", args,
                                 threaded=False)
-        assert retval == '"John: Doe"'
+        self.assertEquals(retval, '"John: Doe"')
 
     def test_cooldown(self):
 
         chat = Chat(None, None)
         chat.message = Mock()
         cm = bot.commandmanager.CommandManager("#tmp", FakeBot(), chat=chat)
+        cm.load_lua(self.UTILS)
 
         # Some test command definitions
         def_commands = [
@@ -136,14 +150,14 @@ class CommandManagerTest(TestCase):
             return _run
 
         retval = run_cmd(1)()
-        assert retval == "Cooldown test"
+        self.assertEquals(retval, "Cooldown test")
 
         self.assertRaises(
             bot.commandmanager.CommandCooldownError, run_cmd(2)
         )
 
         retval = run_cmd(6)()
-        assert retval == "Cooldown test"
+        self.assertEquals(retval, "Cooldown test")
 
     def test_permissions(self):
 
@@ -151,6 +165,7 @@ class CommandManagerTest(TestCase):
         chat.message = Mock()
         cm = bot.commandmanager.CommandManager("#tmp", FakeBot(),
                                                chat=chat)
+        cm.load_lua(self.UTILS)
 
         # Some test command definitions
         def_commands = [
@@ -214,6 +229,7 @@ class CommandManagerTest(TestCase):
         chat = Chat(None, None)
         chat.message = Mock()
         cm = bot.commandmanager.CommandManager("#tmp", FakeBot(), chat=chat)
+        cm.load_lua(self.UTILS)
 
         line = u"test ヽ༼ຈل͜ຈ༽ﾉ AMENO ヽ༼ຈل͜ຈ༽ﾉ"
         cm.add_simple_command(line.split(" "))

@@ -96,10 +96,11 @@ class CommandManager(object):
     """
 
     # Function template for doing Lua function calls
+    # {{ and }} are escaped { and } for .format()
     call_template = u"""
     function(...)
         local chat = require("chat")
-        local retval = __chat__{func_name}(unpack(arg))
+        local retval = __chat__{func_name}(unpack(table.pack(...)))
         if retval ~= nil then
             chat.message(retval)
         end
@@ -346,7 +347,7 @@ class CommandManager(object):
         response_text = response_text.replace('"', '\\"')
 
         func_body = u"""
-        return SimpleCom("{response_text}", user, arg)
+        return SimpleCom("{response_text}", user, table.pack(...))
         """.format(response_text=response_text)
 
         code = self.func_template.format(
@@ -469,9 +470,10 @@ class CommandManager(object):
 
         def simple_com(text, user, args):
             params = []
-            for key in args:
-                if key != "n":
-                    params.append(args[key])
+            if args:
+                for key in args:
+                    if key != "n":
+                        params.append(args[key])
 
             try:
                 response = text.format(*params, user=user)

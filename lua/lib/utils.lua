@@ -32,7 +32,7 @@ end
 -- @param ... Any number of options
 -- @return One of the given options
 function utils.random(...)
-    local options = utils.clean_arg(arg)
+    local options = utils.clean_arg(table.pack(...))
     local index = math.random(1, #options)
 
     return options[index]

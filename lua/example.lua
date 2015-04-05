@@ -1,7 +1,7 @@
 
 function sum_example(...)
     local sum = 0
-    for key, value in ipairs(arg) do
+    for key, value in ipairs(table.pack(...)) do
         sum = sum + tonumber(value)
     end
 

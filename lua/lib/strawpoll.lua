@@ -56,7 +56,7 @@ end
 --
 function strawpoll.create(title, ...)
     local options = {}
-    for k, option in pairs(arg) do
+    for k, option in pairs(table.pack(...)) do
         if k ~= "n" then
             options[k] = option
         end
