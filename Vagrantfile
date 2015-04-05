@@ -7,12 +7,8 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Every Vagrant virtual environment requires a box to build off of.
-    config.vm.box = "2creatives/vagrant-centos"
+    config.vm.box = "chef/centos-7.0"
     config.vm.boot_timeout = 30
-
-    # The url from where the 'config.vm.box' box will be fetched if it
-    # doesn't already exist on the user's system.
-    config.vm.box_url = "https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box"
 
     # SSH agent forwarding makes life easier
     config.ssh.forward_agent = true
@@ -24,21 +20,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Define the vm
     vm_name = "botdev"
-    config.vm.define :dev do |dev|
-        dev.vm.network :private_network, ip: "172.30.30.30"
-        dev.vm.hostname = vm_name
+    config.vm.define :botdev do |botdev|
+        botdev.vm.network :private_network, ip: "172.30.30.30"
+        botdev.vm.hostname = vm_name
 
-        dev.vm.synced_folder "salt/roots/", "/srv/"
-        dev.vm.synced_folder ".",           "/src/"
+        botdev.vm.synced_folder "salt/roots/", "/srv/"
+        botdev.vm.synced_folder ".",           "/src/"
 
-        # dev.vm.network :forwarded_port, guest: 22, host: 22, auto_correct: true
+        # botdev.vm.network :forwarded_port, guest: 22, host: 22, auto_correct: true
 
-        dev.vm.provider "virtualbox" do |v|
+        botdev.vm.provider "virtualbox" do |v|
             v.name = vm_name
             v.customize ["modifyvm", :id, "--memory", "256"]
         end
 
-        dev.vm.provision :salt do |config|
+        botdev.vm.provision :salt do |config|
             config.minion_config = "salt/minion.conf"
             config.run_highstate = true
             config.verbose = true
