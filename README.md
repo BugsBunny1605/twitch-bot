@@ -27,8 +27,9 @@ You can totally just download a .zip with an .exe in it and you don't need to wo
 
 1. Go to [twitch-bot releases](https://github.com/lietu/twitch-bot/releases) page
 1. Download the latest .zip, extract to where-ever you wish
-1. Copy `settings.example.py` to `settings.py`
-1. Check the [Getting an OAuth token for Twitch chat IRC access](https://github.com/lietu/twitch-bot#getting-an-oauth-token-for-twitch-chat-irc-access) -section for basic connectivity help.
+1. Copy `settings.example.py` to `settings.py`, and edit it.
+1. Check the [Getting an OAuth token for Twitch chat IRC access](https://github.com/lietu/twitch-bot#getting-an-oauth-token-for-twitch-chat-irc-access) -section for basic connectivity help. At least USER, OAUTH_TOKEN and CHANNEL_LIST should be edited.
+1. Run `twitchbot.exe`
 1. Profit!11eleven
 
 

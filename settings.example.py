@@ -1,18 +1,13 @@
-#  Copy this file to settings.py and edit it
+# Settings for the bot roughly in order of importance.
 
-# The host and port of the server, if connecting to Twitch you probably
-# don't need to change these
-HOST = "irc.twitch.tv"
-PORT = 6667
-USE_SSL = False
+
+# START OF VERY IMPORTANT SETTINGS #
 
 # Details for logging in with the user you want to use for the bot
 # More information on how to get the OAuth token in README.md
 USER = "your_user_name"
-OAUTH_TOKEN = "oauth:*************"
-
-# Where do you want to store the database
-DATABASE_PATH = "bot.sqlite"
+OAUTH_TOKEN = "oauth:******************************"
+# ----- Your OAuth token should be this long ----- ^
 
 # Configuration for channels and the the streamer names (for e.g. quotes)
 # Usually if your twitch username is foobar you want to configure this as:
@@ -21,27 +16,21 @@ CHANNEL_LIST = {
     "#your_user_name": "Your User Name"
 }
 
-# If you want to log everything the bot does to a file, put the filename here
-LOG_FILE = None
-
-# What prefix do you want for all commands? E.g. with "!" you run !addquote,
-# you could also set this to "foobar" and the command would be "foobaraddquote"
-COMMAND_PREFIX = "!"
-
-# A glob pattern for including Lua code with, the code will be included
-# globally, for most cases you probably want to use library pattern and
-# store your files in the locations specified in LUA_PATH
-LUA_INCLUDE_GLOB = "lua/*.lua"
-
-# LUA_PATH environment variable, where Lua will look for files that are
-# require()d
-LUA_PATH = "lua/lib/?.lua;lua/lib/?/?.lua"
-
 # These nicknames are always considered to have the highest user level (
 # owner) by the bot
 OWNER_USERS = [
     "lietu"
 ]
+
+# END OF VERY IMPORTANT SETTINGS #
+
+
+# What prefix do you want for all commands? E.g. with "!" you run !addquote,
+# you could also set this to "foobar" and the command would be "foobaraddquote"
+COMMAND_PREFIX = "!"
+
+# If you want to log everything the bot does to a file, put the filename here
+LOG_FILE = None
 
 # Add a suffix when showing a quote, that displays the name of the streamer
 # and time it was uttered on
@@ -56,6 +45,24 @@ QUOTE_AUTO_SUFFIX = True
 # padded 2 digit day always.
 # E.g. for ISO 8601: {year}-{month:02}-{day:02} -> 2014-12-31 / 2015-01-01
 QUOTE_AUTO_SUFFIX_TEMPLATE = " [{streamer} / {year}]"
+
+# A glob pattern for including Lua code with, the code will be included
+# globally, for most cases you probably want to use library pattern and
+# store your files in the locations specified in LUA_PATH
+LUA_INCLUDE_GLOB = "lua/*.lua"
+
+# LUA_PATH environment variable, where Lua will look for files that are
+# require()d
+LUA_PATH = "lua/lib/?.lua;lua/lib/?/?.lua"
+
+# Where do you want to store the database
+DATABASE_PATH = "bot.sqlite"
+
+# The host and port of the server, if connecting to Twitch you probably
+# don't need to change these
+HOST = "irc.twitch.tv"
+PORT = 6667
+USE_SSL = False
 
 # ----- ------------------ -----
 # ----- Lua modules config -----

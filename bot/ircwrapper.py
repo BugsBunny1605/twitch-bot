@@ -227,6 +227,12 @@ class IRCWrapper(SingleServerIRCBot):
             repr(event)
         ))
 
+        msg = "Disconnected from server, reconnecting. " \
+              "Are your login details correct?"
+
+        for channel in self.channelList:
+            self.bot.console(channel, msg)
+
     def on_welcome(self, connection, event):
         """
         Event handler run after connection to server has been established,
@@ -239,9 +245,12 @@ class IRCWrapper(SingleServerIRCBot):
 
         self.logger.info("Connected to server, joining channels...")
 
+        msg = "Connected to IRC server! Joining {0}."
+
         for channel in self.channelList:
+            self.bot.console(channel, msg.format(channel))
             self.logger.info("Joining channel {0}".format(channel))
-            connection.join(channel)
+            connection.join(channel.lower())
 
     def on_join(self, connection, event):
         """

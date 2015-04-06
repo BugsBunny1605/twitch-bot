@@ -1,19 +1,50 @@
 from __future__ import absolute_import
 
+try:
+    import settings
+    USING_EXAMPLE = False
+
+    if settings.USER == "your_user_name":
+        USING_EXAMPLE = True
+    if settings.OAUTH_TOKEN == "oauth:*************":
+        USING_EXAMPLE = True
+    if "#your_user_name" in settings.CHANNEL_LIST:
+        USING_EXAMPLE = True
+except ImportError:
+    print("""
+
+----- ----- -----
+----- ERROR -----
+----- ----- -----
+
+Could not find 'settings.py', copying 'settings.example.py', but you'll have to
+edit it with your username, OAuth token and channel information for the bot to
+be able to connect to IRC.
+
+""")
+
+    import shutil
+    shutil.copyfile("settings.example.py", "settings.py")
+
+    print("""
+Continuing normal startup.
+""")
+    USING_EXAMPLE = True
+
+    import settings
+
 import argparse
 import multiprocessing
 import time
 import os
-
 from threading import Thread
+
 from bot.bot import Bot
 from bot.ircwrapper import IRCWrapper
 from bot.utils import log, set_log_file, is_frozen
 from bot.utils import ThreadCallRelay
 from bot.ui import get_ui_choices, get_ui
-from bot.messages import StopMsg
-
-import settings
+from bot.messages import StopMsg, ConsoleMsg
 
 
 def start_ui(ui):
@@ -71,6 +102,13 @@ def main():
     thread.start()
 
     try:
+        if USING_EXAMPLE:
+            msg = "It seems you haven't edited all the important " \
+                  "settings in settings.py. Please edit at least USER, " \
+                  "OAUTH_TOKEN, and CHANNEL_LIST."
+            for channel in settings.CHANNEL_LIST:
+                ui_queues["in"].put(ConsoleMsg(channel, msg))
+
         if options.ui == "None":
             while True:
                 time.sleep(1)

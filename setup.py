@@ -1,6 +1,10 @@
+import sys
 from cx_Freeze import setup, Executable
-from pip.req import parse_requirements
 
+base = None
+# Uncomment to disable the console on Windows, once the thing is stable
+#if sys.platform == "win32":
+#    base = "Win32GUI"
 
 config = {
     'description': 'Twitch Bot',
@@ -22,7 +26,7 @@ config = {
 packages = ['irc', 'jaraco', 'packaging', 'PySide']
 namespace_packages = ['zc.lockfile', 'yg.lockfile']
 include_files = ['db_migrations/', 'lua/', 'ui/']
-excludes = ["settings"] # Let's not distribute the local settings.py file
+excludes = ["settings"]  # Let's not distribute the local settings.py file
 includes = []
 
 setup(
@@ -39,6 +43,6 @@ setup(
         }
     },
     executables=[
-        Executable("twitchbot.py", base=None),
+        Executable("twitchbot.py", base=base),
     ]
 )
