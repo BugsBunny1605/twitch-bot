@@ -46,7 +46,7 @@ function xp.tick()
             xp.set_user_xp(user, xp.get_user_xp(user) + 1)
             given_xp = given_xp + 1
         else
-            _G["log"]("Ignoring user " .. user)
+            _G["log"]("XP: Not giving user " .. user .. " XP, ignored in config.")
         end
     end
 end
