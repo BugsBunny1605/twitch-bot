@@ -31,6 +31,7 @@ You can totally just download a .zip with an .exe in it and you don't need to wo
 1. Check the [Getting an OAuth token for Twitch chat IRC access](https://github.com/lietu/twitch-bot#getting-an-oauth-token-for-twitch-chat-irc-access) -section for basic connectivity help. At least `USER`, `OAUTH_TOKEN` and `CHANNEL_LIST` should be edited.
 1. Run `twitchbot.exe`
 1. Profit!11eleven
+1. When updating, make sure you copy your `settings.py` and `bot.sqlite`.
 
 
 
